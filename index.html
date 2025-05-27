@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>পর্যায় সারণি তথ্য (১-১১৪ মৌল)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #f0f4f8; /* হালকা নীল-ধূসর ব্যাকগ্রাউন্ড */
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff; /* সাদা কন্টেইনার */
+            border-radius: 12px; /* গোলাকার কোণ */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* সুন্দর ছায়া */
+        }
+        .search-box {
+            display: flex;
+            gap: 0.5rem; /* ইনপুট এবং বাটনের মধ্যে ফাঁক */
+            margin-bottom: 1.5rem;
+        }
+        .search-input {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1; /* হালকা ধূসর বর্ডার */
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .search-button {
+            padding: 0.75rem 1.5rem;
+            background-color: #3b82f6; /* নীল বাটন */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .search-button:hover {
+            background-color: #2563eb; /* গাঢ় নীল হোভারে */
+        }
+        .element-info {
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0; /* খুব হালকা ধূসর বর্ডার */
+            border-radius: 8px;
+            background-color: #f8fafc; /* প্রায় সাদা ব্যাকগ্রাউন্ড */
+        }
+        .element-info h2 {
+            font-size: 1.75rem; /* বড় শিরোনাম */
+            font-weight: 700;
+            color: #1e293b; /* গাঢ় টেক্সট */
+            margin-bottom: 1rem;
+        }
+        .element-info p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+            color: #334155; /* মাঝারি গাঢ় টেক্সট */
+        }
+        .element-info p strong {
+            color: #0f172a; /* আরও গাঢ় টেক্সট */
+        }
+        .error-message {
+            color: #dc2626; /* লাল ত্রুটি বার্তা */
+            font-weight: bold;
+            text-align: center;
+        }
+        /* মোবাইল ডিভাইসের জন্য অতিরিক্ত স্টাইল */
+        @media (max-width: 640px) {
+            .container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            .search-box {
+                flex-direction: column; /* ছোট স্ক্রিনে ইনপুট ও বাটন নিচে নিচে */
+            }
+            .search-input, .search-button {
+                width: 100%;
+            }
+            .element-info h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100">
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-700">পর্যায় সারণির মৌলসমূহের তথ্য</h1>
+            <p class="text-slate-500 mt-2">যেকোনো মৌলের পারমাণবিক সংখ্যা লিখে তার বিস্তারিত তথ্য জানুন।</p>
+        </header>
+
+        <div class="search-box mb-6">
+            <input type="number" id="atomicNumberInput" class="search-input" placeholder="পারমাণবিক সংখ্যা লিখুন (যেমন: 1, 6, 11)">
+            <button id="searchButton" class="search-button">অনুসন্ধান</button>
+        </div>
+
+        <div id="elementDetails" class="element-info hidden">
+            </div>
+        <div id="errorMessage" class="error-message hidden mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
+            </div>
+    </div>
+
+    <script>
+        // মৌলসমূহের ডেটাবেস (১ থেকে ১১৪ পর্যন্ত)
+        // ভর সংখ্যা নিকটবর্তী পূর্ণ সংখ্যায় দেওয়া হয়েছে
+        const elementsData = [
+            // Period 1
+            { atomicNumber: 1, name: "হাইড্রোজেন", symbol: "H", atomicMass: 1, valency: [1], electronConfiguration: "1s¹", sizeCategory: "খুব ছোট" },
+            { atomicNumber: 2, name: "হিলিয়াম", symbol: "He", atomicMass: 4, valency: [0], electronConfiguration: "1s²", sizeCategory: "খুব ছোট" },
+            // Period 2
+            { atomicNumber: 3, name: "লিথিয়াম", symbol: "Li", atomicMass: 7, valency: [1], electronConfiguration: "[He] 2s¹", sizeCategory: "ছোট" },
+            { atomicNumber: 4, name: "বেরিলিয়াম", symbol: "Be", atomicMass: 9, valency: [2], electronConfiguration: "[He] 2s²", sizeCategory: "ছোট" },
+            { atomicNumber: 5, name: "বোরন", symbol: "B", atomicMass: 11, valency: [3], electronConfiguration: "[He] 2s² 2p¹", sizeCategory: "ছোট" },
+            { atomicNumber: 6, name: "কার্বন", symbol: "C", atomicMass: 12, valency: [2, 4], electronConfiguration: "[He] 2s² 2p²", sizeCategory: "ছোট" },
+            { atomicNumber: 7, name: "নাইট্রোজেন", symbol: "N", atomicMass: 14, valency: [1, 2, 3, 4, 5], electronConfiguration: "[He] 2s² 2p³", sizeCategory: "ছোট" },
+            { atomicNumber: 8, name: "অক্সিজেন", symbol: "O", atomicMass: 16, valency: [2], electronConfiguration: "[He] 2s² 2p⁴", sizeCategory: "ছোট" },
+            { atomicNumber: 9, name: "ফ্লুরিন", symbol: "F", atomicMass: 19, valency: [1], electronConfiguration: "[He] 2s² 2p⁵", sizeCategory: "খুব ছোট" },
+            { atomicNumber: 10, name: "নিয়ন", symbol: "Ne", atomicMass: 20, valency: [0], electronConfiguration: "[He] 2s² 2p⁶", sizeCategory: "ছোট" },
+            // Period 3
+            { atomicNumber: 11, name: "সোডিয়াম", symbol: "Na", atomicMass: 23, valency: [1], electronConfiguration: "[Ne] 3s¹", sizeCategory: "মাঝারি" },
+            { atomicNumber: 12, name: "ম্যাগনেসিয়াম", symbol: "Mg", atomicMass: 24, valency: [2], electronConfiguration: "[Ne] 3s²", sizeCategory: "মাঝারি" },
+            { atomicNumber: 13, name: "অ্যালুমিনিয়াম", symbol: "Al", atomicMass: 27, valency: [3], electronConfiguration: "[Ne] 3s² 3p¹", sizeCategory: "মাঝারি" },
+            { atomicNumber: 14, name: "সিলিকন", symbol: "Si", atomicMass: 28, valency: [2, 4], electronConfiguration: "[Ne] 3s² 3p²", sizeCategory: "মাঝারি" },
+            { atomicNumber: 15, name: "ফসফরাস", symbol: "P", atomicMass: 31, valency: [3, 5], electronConfiguration: "[Ne] 3s² 3p³", sizeCategory: "মাঝারি" },
+            { atomicNumber: 16, name: "সালফার", symbol: "S", atomicMass: 32, valency: [2, 4, 6], electronConfiguration: "[Ne] 3s² 3p⁴", sizeCategory: "মাঝারি" },
+            { atomicNumber: 17, name: "ক্লোরিন", symbol: "Cl", atomicMass: 35, electronConfiguration: "[Ne] 3s² 3p⁵", valency: [1, 3, 5, 7], sizeCategory: "মাঝারি" },
+            { atomicNumber: 18, name: "আর্গন", symbol: "Ar", atomicMass: 40, valency: [0], electronConfiguration: "[Ne] 3s² 3p⁶", sizeCategory: "মাঝারি" },
+            // Period 4
+            { atomicNumber: 19, name: "পটাশিয়াম", symbol: "K", atomicMass: 39, valency: [1], electronConfiguration: "[Ar] 4s¹", sizeCategory: "বড়" },
+            { atomicNumber: 20, name: "ক্যালসিয়াম", symbol: "Ca", atomicMass: 40, valency: [2], electronConfiguration: "[Ar] 4s²", sizeCategory: "বড়" },
+            { atomicNumber: 21, name: "স্ক্যান্ডিয়াম", symbol: "Sc", atomicMass: 45, valency: [3], electronConfiguration: "[Ar] 3d¹ 4s²", sizeCategory: "বড়" },
+            { atomicNumber: 22, name: "টাইটানিয়াম", symbol: "Ti", atomicMass: 48, valency: [2, 3, 4], electronConfiguration: "[Ar] 3d² 4s²", sizeCategory: "বড়" },
+            { atomicNumber: 23, name: "ভ্যানাডিয়াম", symbol: "V", atomicMass: 51, valency: [2, 3, 4, 5], electronConfiguration: "[Ar] 3d³ 4s²", sizeCategory: "বড়" },
+            { atomicNumber: 24, name: "ক্রোমিয়াম", symbol: "Cr", atomicMass: 52, valency: [2, 3, 6], electronConfiguration: "[Ar] 3d⁵ 4s¹", sizeCategory: "বড়" },
+            { atomicNumber: 25, name: "ম্যাঙ্গানিজ", symbol: "Mn", atomicMass: 55, valency: [2, 3, 4, 6, 7], electronConfiguration: "[Ar] 3d⁵ 4s²", sizeCategory: "বড়" },
+            { atomicNumber: 26, name: "আয়রন", symbol: "Fe", atomicMass: 56, valency: [2, 3, 4, 6], electronConfiguration: "[Ar] 3d⁶ 4s²", sizeCategory: "বড়" },
+            { atomicNumber: 27, name: "কোবাল্ট", symbol: "Co", atomicMass: 59, valency: [2, 3, 4], electronConfiguration: "[Ar] 3d⁷ 4s²", sizeCategory: "বড়" },
+            { atomicNumber: 28, name: "নিকেল", symbol: "Ni", atomicMass: 59, valency: [2, 3, 4], electronConfiguration: "[Ar] 3d⁸ 4s²", sizeCategory: "বড়" },
+            { atomicNumber: 29, name: "কপার", symbol: "Cu", atomicMass: 64, valency: [1, 2, 3], electronConfiguration: "[Ar] 3d¹⁰ 4s¹", sizeCategory: "বড়" },
+            { atomicNumber: 30, name: "জিংক", symbol: "Zn", atomicMass: 65, valency: [2], electronConfiguration: "[Ar] 3d¹⁰ 4s²", sizeCategory: "বড়" },
+            { atomicNumber: 31, name: "গ্যালিয়াম", symbol: "Ga", atomicMass: 70, valency: [1, 2, 3], electronConfiguration: "[Ar] 3d¹⁰ 4s² 4p¹", sizeCategory: "মাঝারি" },
+            { atomicNumber: 32, name: "জার্মেনিয়াম", symbol: "Ge", atomicMass: 73, valency: [2, 4], electronConfiguration: "[Ar] 3d¹⁰ 4s² 4p²", sizeCategory: "মাঝারি" },
+            { atomicNumber: 33, name: "আর্সেনিক", symbol: "As", atomicMass: 75, valency: [3, 5], electronConfiguration: "[Ar] 3d¹⁰ 4s² 4p³", sizeCategory: "মাঝারি" },
+            { atomicNumber: 34, name: "সেলেনিয়াম", symbol: "Se", atomicMass: 79, valency: [2, 4, 6], electronConfiguration: "[Ar] 3d¹⁰ 4s² 4p⁴", sizeCategory: "মাঝারি" },
+            { atomicNumber: 35, name: "ব্রোমিন", symbol: "Br", atomicMass: 80, valency: [1, 3, 5, 7], electronConfiguration: "[Ar] 3d¹⁰ 4s² 4p⁵", sizeCategory: "মাঝারি" },
+            { atomicNumber: 36, name: "ক্রিপ্টন", symbol: "Kr", atomicMass: 84, valency: [0, 2], electronConfiguration: "[Ar] 3d¹⁰ 4s² 4p⁶", sizeCategory: "মাঝারি" },
+            // Period 5
+            { atomicNumber: 37, name: "রুবিডিয়াম", symbol: "Rb", atomicMass: 85, valency: [1], electronConfiguration: "[Kr] 5s¹", sizeCategory: "খুব বড়" },
+            { atomicNumber: 38, name: "স্ট্রনশিয়াম", symbol: "Sr", atomicMass: 88, valency: [2], electronConfiguration: "[Kr] 5s²", sizeCategory: "খুব বড়" },
+            { atomicNumber: 39, name: "ইট্রিয়াম", symbol: "Y", atomicMass: 89, valency: [3], electronConfiguration: "[Kr] 4d¹ 5s²", sizeCategory: "খুব বড়" },
+            { atomicNumber: 40, name: "জিরকোনিয়াম", symbol: "Zr", atomicMass: 91, valency: [2, 3, 4], electronConfiguration: "[Kr] 4d² 5s²", sizeCategory: "খুব বড়" },
+            { atomicNumber: 41, name: "নাইওবিয়াম", symbol: "Nb", atomicMass: 93, valency: [2, 3, 4, 5], electronConfiguration: "[Kr] 4d⁴ 5s¹", sizeCategory: "খুব বড়" },
+            { atomicNumber: 42, name: "মলিবডেনাম", symbol: "Mo", atomicMass: 96, valency: [2, 3, 4, 5, 6], electronConfiguration: "[Kr] 4d⁵ 5s¹", sizeCategory: "খুব বড়" },
+            { atomicNumber: 43, name: "টেকনেশিয়াম", symbol: "Tc", atomicMass: 98, valency: [2, 3, 4, 5, 6, 7], electronConfiguration: "[Kr] 4d⁵ 5s²", sizeCategory: "খুব বড়" },
+            { atomicNumber: 44, name: "রুথেনিয়াম", symbol: "Ru", atomicMass: 101, valency: [2, 3, 4, 5, 6, 7, 8], electronConfiguration: "[Kr] 4d⁷ 5s¹", sizeCategory: "খুব বড়" },
+            { atomicNumber: 45, name: "রোডিয়াম", symbol: "Rh", atomicMass: 103, valency: [2, 3, 4, 5, 6], electronConfiguration: "[Kr] 4d⁸ 5s¹", sizeCategory: "খুব বড়" },
+            { atomicNumber: 46, name: "প্যালাডিয়াম", symbol: "Pd", atomicMass: 106, valency: [0, 2, 4], electronConfiguration: "[Kr] 4d¹⁰", sizeCategory: "খুব বড়" },
+            { atomicNumber: 47, name: "সিলভার", symbol: "Ag", atomicMass: 108, valency: [1, 2, 3], electronConfiguration: "[Kr] 4d¹⁰ 5s¹", sizeCategory: "খুব বড়" },
+            { atomicNumber: 48, name: "ক্যাডমিয়াম", symbol: "Cd", atomicMass: 112, valency: [2], electronConfiguration: "[Kr] 4d¹⁰ 5s²", sizeCategory: "খুব বড়" },
+            { atomicNumber: 49, name: "ইন্ডিয়াম", symbol: "In", atomicMass: 115, valency: [1, 2, 3], electronConfiguration: "[Kr] 4d¹⁰ 5s² 5p¹", sizeCategory: "বড়" },
+            { atomicNumber: 50, name: "টিন", symbol: "Sn", atomicMass: 119, valency: [2, 4], electronConfiguration: "[Kr] 4d¹⁰ 5s² 5p²", sizeCategory: "বড়" },
+            { atomicNumber: 51, name: "অ্যান্টিমনি", symbol: "Sb", atomicMass: 122, valency: [3, 5], electronConfiguration: "[Kr] 4d¹⁰ 5s² 5p³", sizeCategory: "বড়" },
+            { atomicNumber: 52, name: "টেলুরিয়াম", symbol: "Te", atomicMass: 128, valency: [2, 4, 6], electronConfiguration: "[Kr] 4d¹⁰ 5s² 5p⁴", sizeCategory: "বড়" },
+            { atomicNumber: 53, name: "আয়োডিন", symbol: "I", atomicMass: 127, valency: [1, 3, 5, 7], electronConfiguration: "[Kr] 4d¹⁰ 5s² 5p⁵", sizeCategory: "বড়" },
+            { atomicNumber: 54, name: "জেনন", symbol: "Xe", atomicMass: 131, valency: [0, 2, 4, 6, 8], electronConfiguration: "[Kr] 4d¹⁰ 5s² 5p⁶", sizeCategory: "বড়" },
+            // Period 6
+            { atomicNumber: 55, name: "সিজিয়াম", symbol: "Cs", atomicMass: 133, valency: [1], electronConfiguration: "[Xe] 6s¹", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 56, name: "বেরিয়াম", symbol: "Ba", atomicMass: 137, valency: [2], electronConfiguration: "[Xe] 6s²", sizeCategory: "অনেক বড়" },
+            // Lanthanides
+            { atomicNumber: 57, name: "ল্যান্থানাম", symbol: "La", atomicMass: 139, valency: [2, 3], electronConfiguration: "[Xe] 5d¹ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 58, name: "সিরিয়াম", symbol: "Ce", atomicMass: 140, valency: [3, 4], electronConfiguration: "[Xe] 4f¹ 5d¹ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 59, name: "প্রাসিওডিমিয়াম", symbol: "Pr", atomicMass: 141, valency: [2, 3, 4], electronConfiguration: "[Xe] 4f³ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 60, name: "নিওডিমিয়াম", symbol: "Nd", atomicMass: 144, valency: [2, 3], electronConfiguration: "[Xe] 4f⁴ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 61, name: "প্রোমিথিয়াম", symbol: "Pm", atomicMass: 145, valency: [3], electronConfiguration: "[Xe] 4f⁵ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 62, name: "সামারিয়াম", symbol: "Sm", atomicMass: 150, valency: [2, 3], electronConfiguration: "[Xe] 4f⁶ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 63, name: "ইউরোপিয়াম", symbol: "Eu", atomicMass: 152, valency: [2, 3], electronConfiguration: "[Xe] 4f⁷ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 64, name: "গ্যাডোলিনিয়াম", symbol: "Gd", atomicMass: 157, valency: [3], electronConfiguration: "[Xe] 4f⁷ 5d¹ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 65, name: "টারবিয়াম", symbol: "Tb", atomicMass: 159, valency: [3, 4], electronConfiguration: "[Xe] 4f⁹ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 66, name: "ডিসপ্রোসিয়াম", symbol: "Dy", atomicMass: 163, valency: [2, 3], electronConfiguration: "[Xe] 4f¹⁰ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 67, name: "হলমিয়াম", symbol: "Ho", atomicMass: 165, valency: [3], electronConfiguration: "[Xe] 4f¹¹ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 68, name: "আরবিয়াম", symbol: "Er", atomicMass: 167, valency: [3], electronConfiguration: "[Xe] 4f¹² 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 69, name: "থুলিয়াম", symbol: "Tm", atomicMass: 169, valency: [2, 3], electronConfiguration: "[Xe] 4f¹³ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 70, name: "ইটারবিয়াম", symbol: "Yb", atomicMass: 173, valency: [2, 3], electronConfiguration: "[Xe] 4f¹⁴ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 71, name: "লুটেটিয়াম", symbol: "Lu", atomicMass: 175, valency: [3], electronConfiguration: "[Xe] 4f¹⁴ 5d¹ 6s²", sizeCategory: "অনেক বড়" },
+            // Rest of Period 6
+            { atomicNumber: 72, name: "হ্যাফনিয়াম", symbol: "Hf", atomicMass: 178, valency: [2, 3, 4], electronConfiguration: "[Xe] 4f¹⁴ 5d² 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 73, name: "ট্যান্টালাম", symbol: "Ta", atomicMass: 181, valency: [2, 3, 4, 5], electronConfiguration: "[Xe] 4f¹⁴ 5d³ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 74, name: "টাংস্টেন", symbol: "W", atomicMass: 184, valency: [2, 3, 4, 5, 6], electronConfiguration: "[Xe] 4f¹⁴ 5d⁴ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 75, name: "রেনিয়াম", symbol: "Re", atomicMass: 186, valency: [-1, 1, 2, 3, 4, 5, 6, 7], electronConfiguration: "[Xe] 4f¹⁴ 5d⁵ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 76, name: "অসমিয়াম", symbol: "Os", atomicMass: 190, valency: [-2, 0, 1, 2, 3, 4, 5, 6, 7, 8], electronConfiguration: "[Xe] 4f¹⁴ 5d⁶ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 77, name: "ইরিডিয়াম", symbol: "Ir", atomicMass: 192, valency: [-3, -1, 0, 1, 2, 3, 4, 5, 6], electronConfiguration: "[Xe] 4f¹⁴ 5d⁷ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 78, name: "প্লাটিনাম", symbol: "Pt", atomicMass: 195, valency: [0, 1, 2, 3, 4, 5, 6], electronConfiguration: "[Xe] 4f¹⁴ 5d⁹ 6s¹", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 79, name: "গোল্ড", symbol: "Au", atomicMass: 197, valency: [-1, 1, 2, 3, 5], electronConfiguration: "[Xe] 4f¹⁴ 5d¹⁰ 6s¹", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 80, name: "মার্কারি", symbol: "Hg", atomicMass: 201, valency: [1, 2, 4], electronConfiguration: "[Xe] 4f¹⁴ 5d¹⁰ 6s²", sizeCategory: "অনেক বড়" },
+            { atomicNumber: 81, name: "থ্যালিয়াম", symbol: "Tl", atomicMass: 204, valency: [1, 3], electronConfiguration: "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹", sizeCategory: "বড়" },
+            { atomicNumber: 82, name: "লেড", symbol: "Pb", atomicMass: 207, valency: [2, 4], electronConfiguration: "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²", sizeCategory: "বড়" },
+            { atomicNumber: 83, name: "বিসমাথ", symbol: "Bi", atomicMass: 209, valency: [3, 5], electronConfiguration: "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³", sizeCategory: "বড়" },
+            { atomicNumber: 84, name: "পোলোনিয়াম", symbol: "Po", atomicMass: 209, valency: [2, 4, 6], electronConfiguration: "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴", sizeCategory: "বড়" },
+            { atomicNumber: 85, name: "অ্যাস্টাটিন", symbol: "At", atomicMass: 210, valency: [1, 3, 5, 7], electronConfiguration: "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵", sizeCategory: "বড়" },
+            { atomicNumber: 86, name: "রেডন", symbol: "Rn", atomicMass: 222, valency: [0, 2], electronConfiguration: "[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶", sizeCategory: "বড়" },
+            // Period 7
+            { atomicNumber: 87, name: "ফ্রান্সিয়াম", symbol: "Fr", atomicMass: 223, valency: [1], electronConfiguration: "[Rn] 7s¹", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 88, name: "রেডিয়াম", symbol: "Ra", atomicMass: 226, valency: [2], electronConfiguration: "[Rn] 7s²", sizeCategory: "অত্যন্ত বড়" },
+            // Actinides
+            { atomicNumber: 89, name: "অ্যাক্টিনিয়াম", symbol: "Ac", atomicMass: 227, valency: [3], electronConfiguration: "[Rn] 6d¹ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 90, name: "থোরিয়াম", symbol: "Th", atomicMass: 232, valency: [2, 3, 4], electronConfiguration: "[Rn] 6d² 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 91, name: "প্রোটেক্টিনিয়াম", symbol: "Pa", atomicMass: 231, valency: [3, 4, 5], electronConfiguration: "[Rn] 5f² 6d¹ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 92, name: "ইউরেনিয়াম", symbol: "U", atomicMass: 238, valency: [2, 3, 4, 5, 6], electronConfiguration: "[Rn] 5f³ 6d¹ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 93, name: "নেপচুনিয়াম", symbol: "Np", atomicMass: 237, valency: [2, 3, 4, 5, 6, 7], electronConfiguration: "[Rn] 5f⁴ 6d¹ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 94, name: "প্লুটোনিয়াম", symbol: "Pu", atomicMass: 244, valency: [2, 3, 4, 5, 6, 7], electronConfiguration: "[Rn] 5f⁶ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 95, name: "আমেরিসিয়াম", symbol: "Am", atomicMass: 243, valency: [2, 3, 4, 5, 6], electronConfiguration: "[Rn] 5f⁷ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 96, name: "কুরিয়াম", symbol: "Cm", atomicMass: 247, valency: [3, 4], electronConfiguration: "[Rn] 5f⁷ 6d¹ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 97, name: "বার্কেলিয়াম", symbol: "Bk", atomicMass: 247, valency: [3, 4], electronConfiguration: "[Rn] 5f⁹ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 98, name: "ক্যালিফোর্নিয়াম", symbol: "Cf", atomicMass: 251, valency: [2, 3, 4], electronConfiguration: "[Rn] 5f¹⁰ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 99, name: "আইনস্টাইনিয়াম", symbol: "Es", atomicMass: 252, valency: [2, 3], electronConfiguration: "[Rn] 5f¹¹ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 100, name: "ফার্মিয়াম", symbol: "Fm", atomicMass: 257, valency: [2, 3], electronConfiguration: "[Rn] 5f¹² 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 101, name: "মেন্ডেলিভিয়াম", symbol: "Md", atomicMass: 258, valency: [2, 3], electronConfiguration: "[Rn] 5f¹³ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 102, name: "নোবেলিয়াম", symbol: "No", atomicMass: 259, valency: [2, 3], electronConfiguration: "[Rn] 5f¹⁴ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 103, name: "লরেনসিয়াম", symbol: "Lr", atomicMass: 262, valency: [3], electronConfiguration: "[Rn] 5f¹⁴ 7s² 7p¹", sizeCategory: "অত্যন্ত বড়" }, // অথবা [Rn] 5f¹⁴ 6d¹ 7s²
+            // Rest of Period 7 (Superheavy elements)
+            { atomicNumber: 104, name: "রাদারফোর্ডিয়াম", symbol: "Rf", atomicMass: 267, valency: [4], electronConfiguration: "[Rn] 5f¹⁴ 6d² 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 105, name: "ডুবনিয়াম", symbol: "Db", atomicMass: 270, valency: [5], electronConfiguration: "[Rn] 5f¹⁴ 6d³ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 106, name: "সিবোর্গিয়াম", symbol: "Sg", atomicMass: 271, valency: [6], electronConfiguration: "[Rn] 5f¹⁴ 6d⁴ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 107, name: "বোহরিয়াম", symbol: "Bh", atomicMass: 270, valency: [7], electronConfiguration: "[Rn] 5f¹⁴ 6d⁵ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 108, name: "হ্যাসিয়াম", symbol: "Hs", atomicMass: 277, valency: [8], electronConfiguration: "[Rn] 5f¹⁴ 6d⁶ 7s²", sizeCategory: "অত্যন্ত বড়" },
+            { atomicNumber: 109, name: "মাইটনেরিয়াম", symbol: "Mt", atomicMass: 278, valency: [1,3,4,6,8,9], electronConfiguration: "[Rn] 5f¹⁴ 6d⁷ 7s²", sizeCategory: "অত্যন্ত বড়" }, // Valencies are mostly theoretical
+            { atomicNumber: 110, name: "ডার্মস্টেটিয়াম", symbol: "Ds", atomicMass: 281, valency: [0,2,4,6,8], electronConfiguration: "[Rn] 5f¹⁴ 6d⁸ 7s²", sizeCategory: "অত্যন্ত বড়" }, // Valencies are mostly theoretical
+            { atomicNumber: 111, name: "রন্টজেনিয়াম", symbol: "Rg", atomicMass: 282, valency: [-1,1,3,5], electronConfiguration: "[Rn] 5f¹⁴ 6d⁹ 7s²", sizeCategory: "অত্যন্ত বড়" }, // Valencies are mostly theoretical, often [Rn] 5f¹⁴ 6d¹⁰ 7s¹ is also cited
+            { atomicNumber: 112, name: "কোপার্নিসিয়াম", symbol: "Cn", atomicMass: 285, valency: [0,1,2,4], electronConfiguration: "[Rn] 5f¹⁴ 6d¹⁰ 7s²", sizeCategory: "অত্যন্ত বড়" }, // Valencies are mostly theoretical
+            { atomicNumber: 113, name: "নিহোনিয়াম", symbol: "Nh", atomicMass: 286, valency: [1,3], electronConfiguration: "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p¹", sizeCategory: "অত্যন্ত বড়" }, // Valencies are mostly theoretical
+            { atomicNumber: 114, name: "ফ্লেরোভিয়াম", symbol: "Fl", atomicMass: 289, valency: [0,1,2,4,6], electronConfiguration: "[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p²", sizeCategory: "অত্যন্ত বড়" }, // Valencies are mostly theoretical
+        ];
+
+        const atomicNumberInput = document.getElementById('atomicNumberInput');
+        const searchButton = document.getElementById('searchButton');
+        const elementDetailsDiv = document.getElementById('elementDetails');
+        const errorMessageDiv = document.getElementById('errorMessage');
+
+        // ডেটাবেসকে একটি ম্যাপে রূপান্তর করা হচ্ছে যাতে পারমাণবিক সংখ্যা দিয়ে দ্রুত খোঁজা যায়
+        const elementsMap = new Map(elementsData.map(el => [el.atomicNumber, el]));
+        // সর্বোচ্চ পারমাণবিক সংখ্যা বের করা, যা ত্রুটি বার্তায় ব্যবহার করা হবে
+        const maxAtomicNumber = elementsData.length > 0 ? Math.max(...elementsData.map(e => e.atomicNumber)) : 0;
+
+
+        searchButton.addEventListener('click', displayElementInfo);
+        atomicNumberInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                displayElementInfo();
+            }
+        });
+
+        function displayElementInfo() {
+            // পূর্বের বার্তা ও তথ্য মুছে ফেলা
+            elementDetailsDiv.classList.add('hidden');
+            elementDetailsDiv.innerHTML = '';
+            errorMessageDiv.classList.add('hidden');
+            errorMessageDiv.textContent = '';
+
+            const atomicNumber = parseInt(atomicNumberInput.value);
+
+            if (isNaN(atomicNumber)) {
+                showError("অনুগ্রহ করে একটি সঠিক পারমাণবিক সংখ্যা লিখুন।");
+                return;
+            }
+
+            const element = elementsMap.get(atomicNumber);
+
+            if (element) {
+                elementDetailsDiv.innerHTML = `
+                    <h2 class="text-2xl font-bold mb-4 text-blue-600">${element.name} (${element.symbol})</h2>
+                    <p><strong>পারমাণবিক সংখ্যা:</strong> ${element.atomicNumber}</p>
+                    <p><strong>প্রতীক:</strong> ${element.symbol}</p>
+                    <p><strong>নাম:</strong> ${element.name}</p>
+                    <p><strong>পারমাণবিক ভর (পূর্ণ সংখ্যা):</strong> ${element.atomicMass}</p>
+                    <p><strong>যোজনী:</strong> ${element.valency.length > 0 ? element.valency.join(', ') : 'অনির্ধারিত'}</p>
+                    <p><strong>ইলেকট্রন বিন্যাস:</strong> ${element.electronConfiguration}</p>
+                    <p><strong>আপেক্ষিক আকার:</strong> ${element.sizeCategory}</p>
+                `;
+                elementDetailsDiv.classList.remove('hidden');
+            } else {
+                 if (maxAtomicNumber > 0) {
+                    showError(`পারমাণবিক সংখ্যা ${atomicNumber} এর জন্য কোনো মৌল খুঁজে পাওয়া যায়নি। অনুগ্রহ করে ১ থেকে ${maxAtomicNumber} এর মধ্যে একটি সংখ্যা চেষ্টা করুন।`);
+                } else {
+                    showError(`পারমাণবিক সংখ্যা ${atomicNumber} এর জন্য কোনো মৌল ডেটাবেসে খুঁজে পাওয়া যায়নি।`);
+                }
+            }
+        }
+
+        function showError(message) {
+            errorMessageDiv.textContent = message;
+            errorMessageDiv.classList.remove('hidden');
+        }
+
+    </script>
+</body>
+</html>
